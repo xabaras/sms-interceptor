@@ -4,15 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".KotlinSampleActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Start Sms interceptor"
+        android:drawableLeft="@drawable/ic_play_arrow_white"
+        android:drawableStart="@drawable/ic_play_arrow_white"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnStop"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:onClick="startSmsInterceptor"/>
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Stop Sms interceptor"
+        android:drawableLeft="@drawable/ic_stop_white"
+        android:drawableStart="@drawable/ic_stop_white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnStart"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:onClick="stopSmsInterceptor"/>
+
 
 </android.support.constraint.ConstraintLayout>

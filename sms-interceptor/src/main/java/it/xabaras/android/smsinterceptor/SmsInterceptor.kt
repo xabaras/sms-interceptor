@@ -1,7 +1,6 @@
 package it.xabaras.android.smsinterceptor
 
 import android.Manifest
-import android.Manifest.permission.READ_SMS
 import android.Manifest.permission.RECEIVE_SMS
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
@@ -19,7 +18,7 @@ import android.support.v4.content.ContextCompat
 import android.telephony.SmsMessage
 
 /**
- * Created by Paolo Montalto on 04/07/18.
+ * A simple, lifecycle aware, utility class to help you intercept sms messages from within Android apps
  */
 class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : LifecycleObserver {
     private var numberFilter: List<String> = listOf()
@@ -29,9 +28,15 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
     private var onSmsReceivedCallback: ((fromNumber: String, message: String) -> Unit )? = null
     private lateinit var mBroadcastReceiver: SmsBroadcastReceiver
     private var isListening: Boolean = false
+    private val SMS_RECEIVED_ACTION: Lazy<String> = lazy {
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT )
+            Telephony.Sms.Intents.SMS_RECEIVED_ACTION
+        else
+            "android.provider.Telephony.SMS_RECEIVED"
+    }
 
     /**
-     * Setn one or more numbers to filter the messages on
+     * Sets one or more numbers to filter the messages on
      *
      * @param[numberFilter] one or more phone numbers
      */
@@ -62,7 +67,7 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
      * Registers a BroadcastReceiver and starts listening for incoming SMSs
      * @param listener
      */
-    @RequiresPermission(allOf = [RECEIVE_SMS, READ_SMS])
+    @RequiresPermission(RECEIVE_SMS)
     fun startListening(listener: OnSmsReceivedListener) {
         if (!arePermissionsGranted()) return
 
@@ -75,7 +80,7 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
      * Registers a BroadcastReceiver and starts listening for incoming SMSs
      * @param listener
      */
-    @RequiresPermission(allOf = [RECEIVE_SMS, READ_SMS])
+    @RequiresPermission(RECEIVE_SMS)
     fun startListening(callback: ((fromNumber: String, message: String) -> Unit )?) {
         if (!arePermissionsGranted()) return
 
@@ -90,20 +95,21 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
         }
         context.registerReceiver(
                 mBroadcastReceiver,
-                IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)
+                IntentFilter(SMS_RECEIVED_ACTION.value)
         )
         lifecycle?.addObserver(this)
         isListening = true
     }
 
     fun arePermissionsGranted(): Boolean {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED
     }
 
     /**
      * Finishes listening for incoming SMSs
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @Throws(IllegalStateException::class)
     fun inner_stopListening() {
         if ( !this::mBroadcastReceiver.isInitialized ) throw IllegalStateException("You must have first called startListening")
 
@@ -114,6 +120,7 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
     /**
      * Finishes listening for incoming SMSs
      */
+    @Throws(IllegalStateException::class)
     fun stopListening() {
         inner_stopListening()
         lifecycle?.removeObserver(this)
@@ -132,7 +139,7 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
 
         context.registerReceiver(
                 mBroadcastReceiver,
-                IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)
+                IntentFilter(SMS_RECEIVED_ACTION.value)
         )
 
         isListening = true
@@ -140,18 +147,19 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
 
     private inner class SmsBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if ( intent?.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION ) {
+            if ( intent?.action == SMS_RECEIVED_ACTION.value ) {
                 val messages: List<SmsMessage> = getMessagesFromIntent(intent)
                 for (msg: SmsMessage in messages) {
                     val fromNumber = msg.displayOriginatingAddress
 
-                    if ( !numberFilter.isEmpty() && !numberFilter.contains(fromNumber) ) continue
+                    if ( numberFilter.isNotEmpty() && !numberFilter.contains(fromNumber) ) continue
 
                     val message = msg.displayMessageBody
 
-                    if ( !bodyFilter!!.isEmpty() && !message.matches(Regex.fromLiteral(bodyFilter!!)) ) continue
+                    if ( bodyFilter?.isNotEmpty() == true && !message.matches(Regex.fromLiteral(bodyFilter!!)) ) continue
 
-                    if ( lambdaBodyFilter?.invoke(message) != true ) continue
+
+                    if ( lambdaBodyFilter != null && lambdaBodyFilter?.invoke(message) != true ) continue
 
                     onSmsReceivedListener?.onSmsReceived(fromNumber, message)
                     onSmsReceivedCallback?.invoke(fromNumber, message)
@@ -159,6 +167,7 @@ class SmsInterceptor(val context: Context, val lifecycle: Lifecycle? = null) : L
             }
         }
 
+        @Suppress("DEPRECATION")
         fun getMessagesFromIntent(intent: Intent?) : List<SmsMessage> {
             var messages: ArrayList<SmsMessage> = arrayListOf()
 

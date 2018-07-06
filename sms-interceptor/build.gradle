@@ -37,3 +37,34 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+tasks.withType(Javadoc).all {
+    enabled = false
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'SmsInterceptor'
+
+    publishedGroupId = 'it.xabaras.android'
+    libraryName = 'SmsInterceptor'
+    artifact = 'sms-interceptor'
+
+    libraryDescription = 'A simple, lifecycle aware, sms interceptor for Android apps.'
+
+    siteUrl = 'https://github.com/xabaras/sms-interceptor'
+    gitUrl = 'https://github.com/xabaras/sms-interceptor.git'
+
+    libraryVersion = '1.0'
+
+    developerId = 'xabaras'
+    developerName = 'Paolo Montalto'
+    developerEmail = 'p.montalto@xabaras.it'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

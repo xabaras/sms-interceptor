@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SmsInterceptorSample</string>
+    <string name="kotlin_sample">Kotlin sample</string>
+    <string name="java_sample">Java sample</string>
 </resources>
