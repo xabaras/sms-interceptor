@@ -21,10 +21,10 @@ class KotlinSampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        smsInterceptor.setNumberFilter("+3912345678")
-        smsInterceptor.setBodyFilter({
+        smsInterceptor.setNumberFilter("+3912345678", "+441235678")
+        smsInterceptor.setBodyFilter {
             it.startsWith("Hello")
-        })
+        }
     }
 
     fun startSmsInterceptor(view: View?) {
