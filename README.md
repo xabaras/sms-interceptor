@@ -37,7 +37,9 @@ smsInterceptor.startListening { fromNumber, message ->
 
 ### Lifecycle ###
 _SmsInterceptor_  is based upon [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/) therefore is capable of handling lifecycle itself.
+
 This means that _SmsInterceptor_ will stop listening for SMSs when your Activity or Fragment is paused and resume listening when the Fragment/Activity is restored.
+
 So you won't need to do things like these:
 ```kotlin
 fun onPause() {
@@ -83,6 +85,6 @@ smsInterceptor.setBodyFilter("(\d+)")
 or by passing in a lambda ((messageBody: String) -> Boolean) taking a String as input and returning a Boolean value 
 ```kotlin
 smsInterceptor.setBodyFilter {
-            it.startsWith("Hello")
-        }
+    it.startsWith("Hello")
+}
 ```
