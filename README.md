@@ -6,6 +6,7 @@ It provides:
 * No need to register/unregister BroadcastReceivers
 * Filtering messages based on recipient's number or message body
 
+
 [ ![Download](https://api.bintray.com/packages/xabaras/maven/SmsInterceptor/images/download.svg) ](https://bintray.com/xabaras/maven/SmsInterceptor/_latestVersion)
  
 ## How do I get set up? ##
