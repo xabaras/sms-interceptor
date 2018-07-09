@@ -1,5 +1,10 @@
 # sms-interceptor
-This is a simple, lifecycle aware, sms interceptor for Android apps
+This is a simple, lifecycle aware, sms interceptor for Android apps.
+
+It provides:
+* A simple callback to handle received SMSs
+* No need to register/unregister BroadcastReceivers
+* Filtering messages based on recipient's number or message body
 
 [ ![Download](https://api.bintray.com/packages/xabaras/maven/SmsInterceptor/images/download.svg) ](https://bintray.com/xabaras/maven/SmsInterceptor/_latestVersion)
  
@@ -34,6 +39,7 @@ smsInterceptor.startListening { fromNumber, message ->
     // Do what you want with fromNumber and message body
 }
 ```
+N.B. startListening requires [Manifest.permission.RECEIVE_SMS](https://developer.android.com/reference/android/Manifest.permission.html#RECEIVE_SMS), so you will need to declare it in the [AndroidManifest.xml](https://developer.android.com/guide/topics/manifest/manifest-intro) and properly [handle it at runtime](https://developer.android.com/training/permissions/requesting) when needed.
 
 ### Lifecycle ###
 _SmsInterceptor_  is based upon [Android Architecture Components](https://developer.android.com/topic/libraries/architecture/) therefore is capable of handling lifecycle itself.
