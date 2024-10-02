@@ -1,0 +1,4 @@
+{
+    "dbt.enableNewLineagePanel": true,
+    "dbt.dbtIntegration": "core"
+}
