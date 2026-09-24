@@ -31,7 +31,7 @@ Or download the [latest AAR](https://bintray.com/xabaras/maven/SmsInterceptor/_l
 ## Usage ##
 Here is a non-comprehensive guide to SmsInterceptor for any further information you can reference the library sources and/or the sample app sources.
 
-In order to start listening for incoming SMSs you just neet to create a new SmsInterceptor instance
+In order to start listening for incoming SMSs you just need to create a new SmsInterceptor instance
 ```kotlin
 val smsInterceptor: SmsInterceptor = SmsInterceptor(context)
 ```
